@@ -358,17 +358,6 @@ for (const [alias, canonical] of Object.entries(COUNTRY_ALIASES)) {
     COUNTRY_NAME_LOOKUP.set(countryLookupKey(alias), canonical);
 }
 
-/**
- * Hosts that appear on a large share of all profiles. Blocking one is almost never what
- * was meant, so the input warns first — the same courtesy describeTagRisk() extends to a
- * display-name tag short enough to over-match.
- */
-export const OVERBROAD_HOSTS = new Set([
-    'bit.ly', 'facebook.com', 'github.com', 'google.com', 'instagram.com',
-    'linktr.ee', 'reddit.com', 'substack.com', 'tiktok.com', 'twitch.tv',
-    'twitter.com', 'x.com', 'youtu.be', 'youtube.com'
-]);
-
 const HOST_PATTERN =
     /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)+$/;
 
