@@ -4,7 +4,7 @@
  * Uses tabbed interface for switching between countries and regions
  */
 
-import { COUNTRY_LIST, REGION_LIST, LANGUAGE_LIST, ACCOUNT_LABELS, CSS_CLASSES, TIMING, OVERBROAD_HOSTS, normalizeHost } from '../shared/constants.js';
+import { COUNTRY_LIST, REGION_LIST, LANGUAGE_LIST, ACCOUNT_LABELS, CSS_CLASSES, TIMING, normalizeHost } from '../shared/constants.js';
 import { formatCountryName, createElement, debounce, describeTagRisk } from '../shared/utils.js';
 import { glyph, flagImage } from './icons.js';
 
@@ -838,9 +838,7 @@ function createTagBody(onTagAction, onBioTagAction, onLinkAction, onPcfAction) {
         getSet: () => localBlockedLinks,
         onAction: onLinkAction,
         normalizeInput: value => normalizeHost(value),
-        riskMessage: value => OVERBROAD_HOSTS.has(value)
-            ? `${value} appears on a very large number of profiles, so this will hide far more accounts than you may intend.`
-            : null
+        riskMessage: () => null
     });
 
     // Account label is a CLOSED set, so it gets pills rather than free text.

@@ -4,7 +4,7 @@
  */
 
 import browserAPI from '../shared/browser-api.js';
-import { MESSAGE_TYPES, VERSION, COUNTRY_FLAGS, COUNTRY_LIST, REGION_LIST, REGION_FLAGS, REGION_NAMES, LANGUAGE_LIST, LANGUAGE_NAMES, ACCOUNT_LABELS, STORAGE_KEYS, TIMING, canonicalCountry, normalizeHost, OVERBROAD_HOSTS } from '../shared/constants.js';
+import { MESSAGE_TYPES, VERSION, COUNTRY_FLAGS, COUNTRY_LIST, REGION_LIST, REGION_FLAGS, REGION_NAMES, LANGUAGE_LIST, LANGUAGE_NAMES, ACCOUNT_LABELS, STORAGE_KEYS, TIMING, canonicalCountry, normalizeHost } from '../shared/constants.js';
 import { getFlagEmoji, formatCountryName, debounce, describeTagRisk } from '../shared/utils.js';
 import { deviceIcon, glyph } from '../content/icons.js';
 
@@ -830,9 +830,7 @@ async function addBlockedLink(value) {
         if (response?.success) {
             blockedLinks = response.data || [];
             renderAllTagLists();
-            showLinkNote(OVERBROAD_HOSTS.has(host)
-                ? `${host} appears on a very large number of profiles, so this will hide far more accounts than you may intend.`
-                : null);
+            showLinkNote(null);
             showSaveStatus();
         }
     } catch (error) {
