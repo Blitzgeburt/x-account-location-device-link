@@ -14,6 +14,7 @@ import {
     startThemeObserver,
     injectSidebarLink,
     removeSidebarLink,
+    syncSidebarBlockingMode,
     cleanupUI,
     showToast
 } from './ui.js';
@@ -385,6 +386,7 @@ async function handleBackgroundMessage(type, payload) {
         case MESSAGE_TYPES.SETTINGS_UPDATED: {
             const prevSettings = { ...settings };
             settings = payload;
+            syncSidebarBlockingMode(settings.highlightBlockedTweets === true);
             isEnabled = settings.enabled !== false;
             debugMode = settings.debugMode === true;
             debug('Settings updated:', settings);

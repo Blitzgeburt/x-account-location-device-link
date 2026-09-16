@@ -198,6 +198,11 @@ export const MESSAGE_TYPES = {
 // Default settings
 export const DEFAULT_SETTINGS = {
     enabled: true,
+    profileEnrichment: true,
+    blockingEnabled: true,  // Suspend every filter (country/region/tag/bio/label/affiliation/language/VPN)
+    // without clearing any list — flags, badges, and hovercards keep working. This is
+    // deliberately a SEPARATE switch from `enabled`, which turns the whole extension off
+    // (badges included); this one is "pause hiding people, keep showing me who they are."
     showFlags: true,
     flagFromDevice: false,  // Use the device's country for the flag instead of the account location (issue #17); falls back to location for web/unknown
     showDevices: true,
@@ -212,10 +217,6 @@ export const DEFAULT_SETTINGS = {
     showSidebarBlockerLink: true,
     openChangelogOnUpdate: true,  // Open the "What's New"/changelog tab after a major/minor update (issue #24)
     debugMode: false,
-    // Read the profile data X already sends with the timeline (bio, account label, follower
-    // counts) instead of requesting it. Costs no extra API calls and never leaves the device.
-    // Exposed as a kill switch because X can change these response shapes without notice.
-    profileEnrichment: true,
     // NOTE: the community cache is NOT a setting here. It lives in its own storage key
     // (STORAGE_KEYS.CLOUD_CACHE_ENABLED) because the background reads it before settings
     // load. A `cloudCacheEnabled: false` used to sit here, read by nothing, riding along
@@ -426,7 +427,6 @@ export function findBlockedLink(hosts, blocked) {
     }
     return null;
 }
-
 
 /**
  * Resolve X's location spelling to the lowercase country name used by the picker

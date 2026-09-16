@@ -738,8 +738,6 @@ function renderBlockedAffiliations() {
     }
 }
 
-
-
 /**
  * Add a blocked affiliation
  */

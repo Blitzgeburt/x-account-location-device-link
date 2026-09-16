@@ -1551,7 +1551,7 @@ function runUpdateBlockedTweets({
         // display name (the row is still on screen). This is what makes adding OR
         // removing a tag re-apply to already-rendered tweets — and, because we never
         // trust a cached flag, a recycled row can't inherit a previous occupant's block.
-                const isTagBlocked = hasTags && hasBlockedTag(extractDisplayName(element), blockedTags);
+        const isTagBlocked = hasTags && hasBlockedTag(extractDisplayName(element), blockedTags);
         const isBioBlocked = hasBlockedBio(screenName, blockedBioTags);
         const isLinkBlocked = hasBlockedLink(screenName, blockedLinks);
         const isLabelBlocked = hasBlockedAccountLabel(element, tweet, screenName, blockedPcf);

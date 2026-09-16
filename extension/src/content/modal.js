@@ -50,7 +50,8 @@ export function showModal(config = {}) {
         blockedLinks = null, onLinkAction = null,
         blockedPcf = null, onPcfAction = null,
         blockedLanguages = null, onLanguageAction = null,
-        blockedAffiliations = null, onAffiliationAction = null
+        blockedAffiliations = null, onAffiliationAction = null,
+        highlightBlockedTweets = false, onBlockingModeChange = null
     } = config;
 
     // Remove existing modal if present
@@ -84,7 +85,7 @@ export function showModal(config = {}) {
     const header = createHeader(() => {
         overlay.remove();
         currentModal = null;
-    });
+    }, highlightBlockedTweets, onBlockingModeChange);
 
     // Create tab bar
     const { tabBar, switchTab, updateTabCounts } = createTabBar();
@@ -232,7 +233,7 @@ export function showModal(config = {}) {
 /**
  * Create modal header using safe DOM methods
  */
-function createHeader(onClose) {
+function createHeader(onClose, highlightBlockedTweets, onBlockingModeChange) {
     const header = createElement('div', { className: 'x-blocker-header' });
 
     // Create title with shield icon
@@ -245,6 +246,8 @@ function createHeader(onClose) {
     title.appendChild(titleSvg);
     title.appendChild(document.createTextNode('Blocking'));
 
+    const modeControl = createBlockingModeControl(highlightBlockedTweets, onBlockingModeChange);
+
     // Create close button
     const closeBtn = createElement('button', {
         className: 'x-blocker-close',
@@ -256,6 +259,7 @@ function createHeader(onClose) {
     closeBtn.addEventListener('click', onClose);
 
     header.appendChild(title);
+    header.appendChild(modeControl);
     header.appendChild(closeBtn);
 
     return header;
@@ -825,7 +829,7 @@ function createTagBody(onTagAction, onBioTagAction, onLinkAction, onPcfAction) {
 
     const bioSection = createTagSection({
         title: 'Bio contains',
-        hint: ' Matched anywhere inside the account’s bio',
+        hint: 'Matched anywhere inside the account’s bio',
         placeholder: 'Enter a word or phrase from a bio...',
         getSet: () => localBlockedBioTags,
         onAction: onBioTagAction
@@ -1156,6 +1160,47 @@ function createFooter({
     footer.appendChild(btnContainer);
 
     return footer;
+}
+
+/**
+ * Create the hide/highlight control used by the sidebar modal.
+ */
+function createBlockingModeControl(highlightBlockedTweets, onBlockingModeChange) {
+    const control = createElement('button', {
+        type: 'button',
+        className: 'x-blocker-mode-control'
+    });
+    const options = createElement('span', { className: 'x-blocker-mode-options' });
+    const highlightLabel = createElement('span', {
+        className: 'x-blocker-mode-option x-blocker-mode-highlight',
+        textContent: 'Highlight'
+    });
+    const divider = createElement('span', { className: 'x-blocker-mode-divider' });
+    const hideLabel = createElement('span', {
+        className: 'x-blocker-mode-option x-blocker-mode-hide',
+        textContent: 'Hide'
+    });
+    options.appendChild(highlightLabel);
+    options.appendChild(divider);
+    options.appendChild(hideLabel);
+    control.appendChild(options);
+    control.setAttribute('aria-label', 'Blocked tweets mode');
+    control.setAttribute('aria-pressed', highlightBlockedTweets === true ? 'true' : 'false');
+    control.classList.toggle('highlight', highlightBlockedTweets === true);
+
+    control.addEventListener('click', async () => {
+        if (!onBlockingModeChange) return;
+        const nextHighlight = !control.classList.contains('highlight');
+        control.disabled = true;
+        const response = await onBlockingModeChange(nextHighlight);
+        control.disabled = false;
+        if (response?.success) {
+            control.classList.toggle('highlight', nextHighlight);
+            control.setAttribute('aria-pressed', nextHighlight ? 'true' : 'false');
+        }
+    });
+
+    return control;
 }
 
 /**

@@ -641,6 +641,16 @@ export function removeSidebarLink(debug) {
 }
 
 /**
+ * Keep the modal toggle state in sync when settings are changed elsewhere.
+ */
+export function syncSidebarBlockingMode(highlightMode) {
+    const control = document.querySelector('.x-blocker-mode-control');
+    if (!control) return;
+    control.classList.toggle('highlight', highlightMode === true);
+    control.setAttribute('aria-pressed', highlightMode === true ? 'true' : 'false');
+}
+
+/**
  * Add blocker link to sidebar
  */
 function addBlockerLink(nav, blockedCountries, blockedRegions, sendMessage, MESSAGE_TYPES) {
@@ -751,6 +761,7 @@ async function showBlockerModal(blockedCountries, blockedRegions, sendMessage, M
     
     // Get blockedTags + blockedLanguages from the global state (window.__X_POSED_CONTENT__)
     const state = window.__X_POSED_CONTENT__?.getState?.() || {};
+    const currentSettings = state.settings || {};
     const blockedTags = new Set(state.blockedTags || []);
     const blockedBioTags = new Set(state.blockedBioTags || []);
     const blockedLinks = new Set(state.blockedLinks || []);
@@ -832,6 +843,11 @@ async function showBlockerModal(blockedCountries, blockedRegions, sendMessage, M
         return response;
     };
 
+    const onBlockingModeChange = highlight => sendMessage({
+        type: MESSAGE_TYPES.SET_SETTINGS,
+        payload: { ...currentSettings, highlightBlockedTweets: highlight }
+    });
+
     showModal({
         blockedCountries,
         blockedRegions,
@@ -848,7 +864,9 @@ async function showBlockerModal(blockedCountries, blockedRegions, sendMessage, M
         blockedLanguages,
         onLanguageAction,
         blockedAffiliations,
-        onAffiliationAction
+        onAffiliationAction,
+        highlightBlockedTweets: currentSettings.highlightBlockedTweets === true,
+        onBlockingModeChange
     });
 }
 

@@ -56,7 +56,7 @@ export function setProfile(screenName, data) {
             data.links
                 .map(normalizeHost)
                 .filter(Boolean)
-          )].slice(0, PROFILE_CACHE_CONFIG.MAX_LINKS)
+        )].slice(0, PROFILE_CACHE_CONFIG.MAX_LINKS)
         : [];
 
     profiles.set(screenName.toLowerCase(), {
