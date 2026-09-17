@@ -331,13 +331,14 @@ import { PacedLookupQueue, readRateLimitReset } from '../shared/request-policy.j
             }
         }
 
-        const location = user?.location;
-        const locationText = typeof location === 'string'
-            ? location
-            : location && typeof location === 'object'
-                ? [location.location, location.name, location.text, location.value]
-                    .find(value => typeof value === 'string')
-                : '';
+        const getLocationText = location => {
+            if (typeof location === 'string') return location;
+            if (!location || typeof location !== 'object') return '';
+            const candidates = [location.location, location.name, location.text, location.value];
+            return candidates.find(value => typeof value === 'string') ?? '';
+        };
+        
+        const locationText = getLocationText(user?.location);
         if (locationText) {
             for (const match of locationText.slice(0, MAX_BIO_LENGTH).matchAll(BARE_DOMAIN)) {
                 if (add(match[1])) return hosts;

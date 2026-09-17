@@ -151,7 +151,7 @@ export function showModal(config = {}) {
     tabBar.querySelector('[data-tab="affiliations"]').addEventListener('click', () => handleTabSwitch('affiliations'));
 
     // Create footer
-    // Clearing the Tags tab clears all four of its lists — leaving one behind while the
+    // Clearing the Tags tab clears all four of its lists — leaving two behind while the
     // button says "Clear All" is exactly the kind of half-action that reads as a bug.
     const onClearTags = async () => {
         await Promise.all([
@@ -704,7 +704,7 @@ function tagTotal() {
  * them as a single undifferentiated list is what made over-matching read as a bug.
  * @param {{title: string, hint: string, placeholder: string, getSet: Function, onAction: Function}} opts
  */
-function createTagSection({ title, hint, placeholder, getSet, onAction, normalizeInput = value => value.trim(), riskMessage = describeTagRisk }) {
+function createTagSection({ title, hint, placeholder, getSet, onAction, normalizeInput = value => value.trim() }) {
     const section = createElement('div', { className: 'x-blocker-tag-section' });
 
     const heading = createElement('div', { className: 'x-blocker-tag-group' });
@@ -732,7 +732,7 @@ function createTagSection({ title, hint, placeholder, getSet, onAction, normaliz
     section.appendChild(list);
 
     const showRisk = tag => {
-        const message = tag ? riskMessage(tag) : null;
+        const message = tag ? describeTagRisk(tag) : null;
         riskNote.textContent = message || '';
         riskNote.style.display = message ? 'block' : 'none';
     };
@@ -804,7 +804,7 @@ function createTagSection({ title, hint, placeholder, getSet, onAction, normaliz
  * part of the account and therefore given its own section.
  *   - Display name  - substring of the name shown next to the handle
  *   - Bio           - substring of the profile description
- *   - Links        - profile website and bio links, including subdomains
+ *   - Links         - profile website and bio links, including subdomains
  *   - Account label - X's Parody / Commentary / Fan value or rendered grey badge
  */
 function createTagBody(onTagAction, onBioTagAction, onLinkAction, onPcfAction) {
@@ -825,7 +825,7 @@ function createTagBody(onTagAction, onBioTagAction, onLinkAction, onPcfAction) {
 
     const bioSection = createTagSection({
         title: 'Bio contains',
-        hint: ' Matched anywhere inside the account’s bio',
+        hint: 'Matched anywhere inside the account’s bio',
         placeholder: 'Enter a word or phrase from a bio...',
         getSet: () => localBlockedBioTags,
         onAction: onBioTagAction
@@ -837,8 +837,7 @@ function createTagBody(onTagAction, onBioTagAction, onLinkAction, onPcfAction) {
         placeholder: 'Enter a domain...',
         getSet: () => localBlockedLinks,
         onAction: onLinkAction,
-        normalizeInput: value => normalizeHost(value),
-        riskMessage: () => null
+        normalizeInput: value => normalizeHost(value)
     });
 
     // Account label is a CLOSED set, so it gets pills rather than free text.

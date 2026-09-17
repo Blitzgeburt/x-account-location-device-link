@@ -600,7 +600,14 @@ article[data-testid="tweet"]:has([data-x-block="hide"]) {
 /* Blocked QUOTED posts (issue #32): a quote card sits inside someone else's tweet, so
    a blocked quoted author must never hide the row. The verdict lands on its own marker
    (data-x-quote-block) and is scoped here to the enclosing quote card only. Everything
-   is CSS-driven off that marker — nothing is injected — so X re-rendering can't undo it. */
+   is CSS-driven off that marker — nothing is injected — so X re-rendering can't undo it.
+
+   Fork difference vs upstream: upstream keyed the CSS label off a single reason attribute
+   such as [data-x-quote-reason="country"], then wrote one selector per reason. This fork
+   resolves the combined reasons in observer.js, formats them once as a single string (for
+   example "Quoted post hidden · Country, Bio tag"), and writes that to data-x-quote-label.
+   The CSS below therefore renders a single attribute-based label instead of a selector-per-
+   reason tree. */
 article[data-testid="tweet"] div[role="link"][tabindex="0"]:has([data-x-quote-block="hide"]) {
     /* The card itself becomes the placeholder row. Its real children are hidden below,
        so re-purposing its layout only ever positions our two pseudo-elements. */
@@ -622,7 +629,9 @@ article[data-testid="tweet"] div[role="link"][tabindex="0"]:has([data-x-quote-bl
 article[data-testid="tweet"] div[role="link"][tabindex="0"]:has([data-x-quote-block="hide"]) > * {
     display: none !important;
 }
-/* Two-tone label: what happened, then what to do about it */
+/* Two-tone label: what happened, then what to do about it.
+   The label is assembled in observer.js and written to data-x-quote-label so the CSS can
+   render the final combined reason without matching on every individual reason value. */
 article[data-testid="tweet"] div[role="link"][tabindex="0"]:has([data-x-quote-block="hide"])::before {
     content: attr(data-x-quote-label);
     font-size: 13.5px;

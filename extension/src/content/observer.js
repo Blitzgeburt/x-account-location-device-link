@@ -32,6 +32,10 @@ function effectiveCountry(info, flagFromDevice) {
 /**
  * Which filters blocked this account, or '' if none did.
  *
+ * Preserves every matching filter in one comma-separated string. That is deliberate: the label on a 
+ * collapsed quote card is a reader-facing explanation, and users benefit from
+ * seeing exactly why the card was hidden (country, bio tag, linked domain, etc.).
+ *
  * The verdict used to be computed as one OR'd boolean in two separate places
  * (applyInfoToElement and runUpdateBlockedTweets), which meant the two could drift
  * apart and the reason was thrown away the moment it was known. Both now call this,
@@ -39,7 +43,8 @@ function effectiveCountry(info, flagFromDevice) {
  * card (issue #42).
  *
  * The order is stable so the quote-card label is predictable when several filters match.
- *
+ * Location is first, since it's what the extension is about. More specific filters (tag, bio, link, label) follow in the order they appear in the modal.
+ * The User controls all these filters, so knowing exactly which one(s) triggered is nice to have.
  /**
  * @param {Object} r - reason flags, each already resolved by the caller
  * @returns {string} comma-separated reason keys, or ''
@@ -70,6 +75,10 @@ const BLOCK_REASON_LABELS = {
 };
 
 function formatBlockReason(reason) {
+    // Upstream kept a single label in the collapsed-quote placeholder; this fork keeps all
+    // matching filters in the same label so the reader can tell why the quote was hidden.
+    // The local label therefore reads like "Quoted post hidden · Country, Bio tag, Linked domain"
+    // instead of collapsing everything to the first trigger only.
     const labels = String(reason || '').split(',')
         .map(key => BLOCK_REASON_LABELS[key])
         .filter(Boolean);
@@ -1551,7 +1560,7 @@ function runUpdateBlockedTweets({
         // display name (the row is still on screen). This is what makes adding OR
         // removing a tag re-apply to already-rendered tweets — and, because we never
         // trust a cached flag, a recycled row can't inherit a previous occupant's block.
-                const isTagBlocked = hasTags && hasBlockedTag(extractDisplayName(element), blockedTags);
+        const isTagBlocked = hasTags && hasBlockedTag(extractDisplayName(element), blockedTags);
         const isBioBlocked = hasBlockedBio(screenName, blockedBioTags);
         const isLinkBlocked = hasBlockedLink(screenName, blockedLinks);
         const isLabelBlocked = hasBlockedAccountLabel(element, tweet, screenName, blockedPcf);

@@ -61,7 +61,7 @@ export function setProfile(screenName, data) {
 
     profiles.set(screenName.toLowerCase(), {
         bio: bio || null,
-        links,
+        links, //`links` is already a normalized array, and should stay as [] when empty
         pcf: normalizePcfLabel(data.pcf) || null,
         followers: toCount(data.followers),
         following: toCount(data.following),
